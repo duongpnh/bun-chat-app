@@ -6,7 +6,11 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@elysiajs/html": "^0.7.0",
+    "elysia": "latest",
+    "http-status": "^1.7.0",
+    "mongoose": "^7.5.2",
+    "stripe": "^13.7.0"
   },
   "devDependencies": {
     "bun-types": "latest"

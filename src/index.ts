@@ -2,30 +2,19 @@ import { Elysia, InternalServerError } from "elysia";
 import mongoose from "mongoose";
 
 import './bun.env';
-import { userRoute } from '@users/user.route';
-import { wsRoute } from "@ws/message.route";
+import { routes } from "./modules/routes";
+import { request } from "http";
 
 const app = new Elysia();
 
-app.get("/", () => "Hello World");
+app.trace(async ({ handle, set }) => {
+  const { time, end } = await handle
 
-app.group("/users", app => app).get('/', () => 'Using Users').use(userRoute);
-app.ws('/ws', {
-  open(ws) {
-      const msg = `Anyone has entered the chat`;
-      ws.subscribe("the-group-chat");
-      ws.publish("the-group-chat", msg);
-  },
-  message(ws, message) {
-    console.log("🚀 ~ file: index.ts:15 ~ message ~ message:", message)
-    ws.publish("the-group-chat", message)
-  },
-  close(ws) {
-    const msg = `Anyone has left the chat`;
-    ws.unsubscribe("the-group-chat");
-    ws.publish("the-group-chat", msg);
-  },
-});
+  set.headers['Server-Timing'] = `handle;dur=${(await end) - time}`
+})
+app.get("/health-check", () => "Server is working");
+
+app.use(routes(app));
 
 (async () => {
   try {

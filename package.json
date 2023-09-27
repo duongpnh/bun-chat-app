@@ -6,13 +6,16 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "@elysiajs/bearer": "^0.7.0",
     "@elysiajs/html": "^0.7.0",
     "elysia": "latest",
     "http-status": "^1.7.0",
+    "jsonwebtoken": "8.5.1",
     "mongoose": "^7.5.2",
     "stripe": "^13.7.0"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "8.5.1",
     "bun-types": "latest"
   },
   "module": "src/index.js"

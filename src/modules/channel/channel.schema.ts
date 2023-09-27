@@ -1,3 +1,4 @@
+import { CollectionName } from "@enums/collection.enum";
 import mongoose from "mongoose";
 
 const ChannelEntity = {
@@ -17,6 +18,8 @@ const ChannelEntity = {
 
 const schema = new mongoose.Schema(ChannelEntity, {
   versionKey: false, 
+  timestamps: true,
+  collection: CollectionName.CHANNELS,
   toJSON: {
     virtuals: true,
     transform(doc, ret, options) {
@@ -29,5 +32,5 @@ const schema = new mongoose.Schema(ChannelEntity, {
 
 schema.index({ name: 1 }, { unique: true })
 
-export const UserModel = mongoose.model('Channel', schema);
+export const ChannelModel = mongoose.model('Channel', schema);
 

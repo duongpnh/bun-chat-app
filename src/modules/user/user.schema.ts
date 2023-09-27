@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { CollectionName } from "@enums/collection.enum";
 
 const UserEntity = {
   firstName: {
@@ -30,7 +31,9 @@ const UserEntity = {
 }
 
 const schema = new mongoose.Schema(UserEntity, {
-  versionKey: false, 
+  versionKey: false,
+  timestamps: true,
+  collection: CollectionName.USERS, 
   toJSON: {
     virtuals: true,
     transform(doc, ret, options) {

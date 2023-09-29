@@ -2,6 +2,11 @@ import Elysia from "elysia"
 import { authRoute } from "@auth/auth.route";
 import { userRoute } from "@users/user.route"
 import { route as channelRoute } from "@channel/channel.route"
+import jwt from "@elysiajs/jwt";
+import cookie from "@elysiajs/cookie";
+import swagger from "@elysiajs/swagger";
+import { isAuthenticated } from "@middleware/auth.middleware";
+import cors from "@elysiajs/cors";
 
 export const routes = (route: Elysia) => {
   // route.get('/', ({ cookie }) => {
@@ -18,10 +23,28 @@ export const routes = (route: Elysia) => {
 
   //     return 'OK';
   // })
-
-  route.group("/users", app => app).use(userRoute);
-  route.group("/auth", app => app).use(authRoute);
-  route.group("/channels", app => app).use(channelRoute);
+  route.use(swagger({
+    documentation: {
+      info: {
+        title: 'Chat App Documentation',
+        version: '1.0.0'
+      },
+    }
+  })).group("/api", (app) => 
+    app
+      .use(cors())
+      .use(
+        jwt({
+          name: 'jwt',
+          secret: Bun.env.JWT_SECRET
+        })
+      )
+      .use(cookie())
+      .use(isAuthenticated)
+      .group("/users", app => app).use(userRoute)
+      .group("/auth", app => app).use(authRoute)
+      .group("/channels", app => app).use(channelRoute)
+  )
 
   // web socket
   // route.ws('/ws', {

@@ -20,9 +20,15 @@ const UserEntity = {
     unique: true,
     require: true,
   },
-  password: {
+  salt: {
     type: String,
     unique: false,
+    require: true,
+  },
+  hash: {
+    type: String,
+    unique: false,
+    require: true,
   },
   avatar: {
     type: String,

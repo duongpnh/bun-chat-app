@@ -1,5 +1,5 @@
 export class SignInResponseDto {
-  id: string;
-  username: string;
-  token: string;
+  success: boolean;
+  data: null | any;
+  message: string;
 }

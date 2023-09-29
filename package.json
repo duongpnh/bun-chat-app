@@ -7,10 +7,13 @@
   },
   "dependencies": {
     "@elysiajs/bearer": "^0.7.0",
+    "@elysiajs/cookie": "^0.7.0",
+    "@elysiajs/cors": "^0.7.1",
     "@elysiajs/html": "^0.7.0",
+    "@elysiajs/jwt": "^0.7.0",
+    "@elysiajs/swagger": "^0.7.3",
     "elysia": "latest",
     "http-status": "^1.7.0",
-    "jsonwebtoken": "8.5.1",
     "mongoose": "^7.5.2",
     "stripe": "^13.7.0"
   },

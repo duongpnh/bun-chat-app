@@ -1,12 +1,11 @@
-import { Context, Cookie, InternalServerError, NotFoundError } from "elysia";
+import { Context, InternalServerError, NotFoundError } from "elysia";
 import { SignInDto } from "./dto/sign-in.dto";
 import { UserModel } from "@users/user.schema";
 import { SignInResponseDto } from "./dto/sign-in-response.dto";
 import { UserDto } from "@users/dto/user.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
-import { comparePassword, hashPassword, md5hash } from "src/utils/bcrypt";
+import { comparePassword, hashPassword } from "src/utils/bcrypt";
 import mongoose from "mongoose";
-import httpStatus from "http-status";
 
 export class AuthService {
   async signIn(payload: SignInDto, set: Context['set'], jwt: any, setCookie: any): Promise<SignInResponseDto> {
@@ -14,17 +13,16 @@ export class AuthService {
       const { username, password } = payload;
 
       // TODO: enhancing password
-      const user = await UserModel.findOne({
+      const user: UserDto | null = await UserModel.findOne({
         username,
       });
-      console.log("🚀 ~ file: auth.service.ts:21 ~ AuthService ~ signIn ~ user:", user)
 
       if (!user) {
         set.status = 400;
         throw 'Invalid credentials';
       }
 
-      const match = await comparePassword(password, user.salt as string, user.hash as string);
+      const match = await comparePassword(password, user.salt, user.hash);
 
       if (!match) {
         set.status = 400;
@@ -33,13 +31,13 @@ export class AuthService {
       }
 
       const accessToken = await jwt.sign({
-        id: user.id,
+        username: user.username,
       });
 
       const refreshToken = await jwt.sign({
-        id: user.id,
+        username: user.username,
       });
-      
+
       // set cookie
       setCookie('access_token', accessToken, {
         maxAge: 15 * 60, // 15 minutes
@@ -50,10 +48,17 @@ export class AuthService {
         path: "/",
       });
 
+      set.status = 200;
+
       return {
+        username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatar: user.avatar,
         success: true,
-        data: null,
         message: "Account login successfully",
+        token: accessToken,
+        refreshToken,
       };
     } catch (e) {
       throw new InternalServerError(JSON.stringify(e));

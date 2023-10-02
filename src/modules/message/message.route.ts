@@ -1,11 +1,47 @@
+import cors from "@elysiajs/cors";
+import jwt from "@elysiajs/jwt";
 import Elysia from "elysia"
 
-const wsRoute = new Elysia({ prefix: '/ws' })
+const messageRoute = new Elysia()
 
-wsRoute.ws('/', {
-  message(ws, message) {
-    ws.send(message)
+const topic = 'chat';
+messageRoute
+.use(cors())
+.use(
+  jwt({
+    name: 'jwt',
+    secret: Bun.env.JWT_SECRET
+  })
+)
+.ws('/chat', {
+  async open(ws) {
+    const { query, jwt, store, set } = ws.data;
+    const token = query.access_token;
+    const payload = await jwt.verify(token);
+    const { username } = payload as { username: string };
+    // subscribe channel to receive broadcast message
+    store['username'] = username;
+    ws.subscribe(topic)
+    
+    // send broadcast message
+    ws.publish(topic, JSON.stringify({ username, message: `has joined the channel` }));
   },
-});
+  // handler called when a message is received
+  message(ws, message) {
+    console.log("🚀 ~ file: message.route.ts:34 ~ message ~ message:", message)
+    const { store } = ws.data;
+    const { username } = store as { username: string };
+    // this is a group chat
+    // so the server re-broadcasts incoming message to everyone
+    ws.publish(topic, JSON.stringify({ username, message }));
+  },
+  close(ws) {
+    const { store } = ws.data;
+    const { username } = store as { username: string };
+    const msg = `${username} has left the chat`;
+    ws.unsubscribe(topic);
+    ws.publish(topic, msg);
+  },
+}).listen('3003');
 
-export { wsRoute };
+export { messageRoute };

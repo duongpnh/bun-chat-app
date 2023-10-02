@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 
 import './bun.env';
 import { routes } from "./modules/routes";
-import { request } from "http";
 
 const app = new Elysia();
 

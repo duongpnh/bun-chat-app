@@ -10,20 +10,6 @@ import cors from "@elysiajs/cors";
 import cookie from '@elysiajs/cookie';
 
 export const routes = (route: Elysia) => {
-  // route.get('/', ({ cookie }) => {
-
-
-  //     // set cookie
-  //     (cookie.name as any)?.set({
-  //       domain: 'hello.abc',
-  //       httpOnly: true,
-  //       value: {
-  //         id: '#123456',
-  //       },
-  //     })
-
-  //     return 'OK';
-  // })
   route.use(swagger({
     documentation: {
       info: {
